@@ -134,7 +134,7 @@ sam deploy ....
 Du må selv finne ut av argumentene for `sam deploy`
 
 #### Tips og  anbefalinger
-- **Timeout**: Husk at Lambdafunksjoner har en konfigurerbar timeout, viktig spesielt for cideo
+- **Timeout**: Husk at Lambdafunksjoner har en konfigurerbar timeout, viktig spesielt for video
 - **IAM-rolle**: Sørg for at Lambda-funksjonen har nødvendige tillatelser til å skrive til S3-bucketen, og kalle tjenesten AWS Bedrock
 - **Regionkonfigurasjon**: Husk at regionen for infrastrukturen skal være `eu-west-1`, selv om ressurser som AWS Bedrock kan ligge i andre regioner.
 
