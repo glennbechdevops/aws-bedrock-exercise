@@ -6,7 +6,8 @@
 
 Du må start med å lage en fork av dette repoet til din egen GitHub konto.
 
-![Alt text](img/fork.png  "a title")
+<img width="2938" height="1334" alt="image" src="https://github.com/user-attachments/assets/81319cee-9cc0-4658-8de1-f9adb328ac30" />
+
 
 ## Lag AWS Credentials 
 
@@ -17,10 +18,11 @@ Du må start med å lage en fork av dette repoet til din egen GitHub konto.
 <img width="2652" height="1186" alt="image" src="https://github.com/user-attachments/assets/e5eb3cc1-8310-4515-b0f8-54acbd6b2db9" />
 
 * I din fork, velg "settings" og "Secrets and Variables"
-* Velg "Coee Spaces" og "New repository secret
+* Velg "Code Spaces" og "New repository secret"
 * Legg inn verdier for både AWS_ACCESS_KEY_ID og AWS_SECRET_ACCESS_KEY
 
 ## Start et Codespace & Installer nødvendig programvare 
+
 * Fra din fork av dette repositoryet, starter du CodeSpaces. Keyboard shortcut er "."
 * Alternativt, velg den grønne "Code", "Velg Codespaces" og "Create codespace from main"
 * Fra ditt mnye CodeSpace - Åpne et **terminalvindu**, og velg "Continue working in GitHub Codespaces"
@@ -48,32 +50,6 @@ AWS Bedrock er en tjeneste fra Amazon som gir tilgang til ulike KI-modeller uten
 Ved å bruke denne modellen kan du sende inn et "prompt," som for eksempel "en solnedgang over fjorden med palmer, fjell, og en elg i bakgrunnen." Bedrock vil deretter generere et bilde som samsvarer med beskrivelsen.
 
 Funksjonaliteten vi trenger fra AWS Bedrock er foreløpig ikke tilgjengelig i Irland, så du vil se referanser til regionen "us-east-1" i koden. Likevel skal du bruke Irland (eu-west-1) som region for infrastrukturen din. Det er ingen problem for en Lambda-funksjon i Irland å benytte Bedrock-tjenesten i USA.
-
-## Lag AWS Credentials 
-
-* Følg veiledningen her for å lage Access Key og Secret Access Key  - https://github.com/glennbechdevops/aws-iam-accesskeys
-* Sett verdiene som CodeSpaces/Repository secrets
-
-<img width="2652" height="1186" alt="image" src="https://github.com/user-attachments/assets/e5eb3cc1-8310-4515-b0f8-54acbd6b2db9" />
-
-## Installer nødvendig programvare i ditt CodeSpaces miljø 
-
-* Fra din fork av dette repositoryet, starter du CodeSpaces. Keyboard shortcut er "." 
-* Åpne et terminalvindu, 
-
-### Installer AWS CLI 
-
-```
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-```
-
-Test at CLI og Akesessnøkler er riktig satt opp ved å kjøre 
-
-```
-aws s3 ls
-```
 
 ### Installer SAM
 
