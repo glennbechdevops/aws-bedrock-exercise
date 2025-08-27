@@ -84,7 +84,7 @@ generate_exam_question.py
 
 ```
 
-I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25` dere kan bruke for lagring av bilder og video
+I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25` Python koden bruker denne for å lagre bilder- og video, dere kan fortsette med det når dere lager Lambda-funksjoner
 
 
 Et virtual environment i Python er et isolert miljø der du kan installere pakker og avhengigheter uten å påvirke resten av systemet. Det gjør det mulig å ha forskjellige prosjekter med ulike pakkeversjoner på samme maskin.
