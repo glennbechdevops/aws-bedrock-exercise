@@ -41,7 +41,7 @@ Test at CLI og Akesessnøkler er riktig satt opp ved å kjøre
 
 ```
 aws s3 ls
-``
+````
 
 ## Litt om AWS Bedrock 
 
