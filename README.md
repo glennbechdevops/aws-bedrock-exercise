@@ -58,7 +58,7 @@ I dette repositoryet finner du tre python-programmer. Programmene har "noen" utf
 2. generate_video.py - Lager en video basert på et tekst-prompt
 3. generate_exam_question lager et tilfeldig eksamenssprørsmål til AWS Certified Developer Associate sertifiseringen
 
-I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25`. Din oppgave er å ta utgangspunkt en eller flere av Python-programmene og implementere de som  AWS Lambda-funksjoner ved hjelp av AWS SAM (Serverless Application Model). 
+Din oppgave er å ta utgangspunkt en eller flere av Python-programmene og implementere de som  AWS Lambda-funksjoner ved hjelp av AWS SAM (Serverless Application Model). 
 
 Prøv gjerne pythonkoden først for å bli kjent med tjenesten. I ditt codespace kan du lage et nytt Python `virtual environment`
 
@@ -72,6 +72,9 @@ python generate_video.py
 generate_exam_question.py
 
 ```
+
+I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25` dere kan bruke for lagring av bilder og video
+
 
 Et virtual environment i Python er et isolert miljø der du kan installere pakker og avhengigheter uten å påvirke resten av systemet. Det gjør det mulig å ha forskjellige prosjekter med ulike pakkeversjoner på samme maskin.
 
