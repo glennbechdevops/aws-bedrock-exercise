@@ -16,6 +16,40 @@ Ved å bruke denne modellen kan du sende inn et "prompt," som for eksempel "en s
 
 Funksjonaliteten vi trenger fra AWS Bedrock er foreløpig ikke tilgjengelig i Irland, så du vil se referanser til regionen "us-east-1" i koden. Likevel skal du bruke Irland (eu-west-1) som region for infrastrukturen din. Det er ingen problem for en Lambda-funksjon i Irland å benytte Bedrock-tjenesten i USA.
 
+## Lag AWS Credentials 
+
+* Følg veiledningen her for å lage Access Key og Secret Access Key  - https://github.com/glennbechdevops/aws-iam-accesskeys
+* Sett verdiene som CodeSpaces/Repository secrets
+
+<img width="2652" height="1186" alt="image" src="https://github.com/user-attachments/assets/e5eb3cc1-8310-4515-b0f8-54acbd6b2db9" />
+
+## Installer nødvendig programvare i ditt CodeSpaces miljø 
+
+* Fra din fork av dette repositoryet, starter du CodeSpaces. Keyboard shortcut er "." 
+* Åpne et terminalvindu, 
+
+### Installer AWS CLI 
+
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+Test at CLI og Akesessnøkler er riktig satt opp ved å kjøre 
+
+```
+aws s3 ls
+```
+
+### Installer SAM
+
+```
+wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
+sudo ./sam-installation/install
+````
+
 #  Oppgave: Implementer en Lambda-funksjon med SAM
 
 I dette repositoryet finner du tre python-programmer. Programmene har "noen" utfordringer med tanke på kodekvalitet, men har fungerende kode for å genere vide, bilde og tekst.
@@ -24,7 +58,7 @@ I dette repositoryet finner du tre python-programmer. Programmene har "noen" utf
 2. generate_video.py - Lager en video basert på et tekst-prompt
 3. generate_exam_question lager et tilfeldig eksamenssprørsmål til AWS Certified Developer Associate sertifiseringen
 
-I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25`. Din oppgave er å ta utgangspunkt en eller flere av Python-programmene og implementere funksjonaliteten som en AWS Lambda-funksjon ved hjelp av AWS SAM (Serverless Application Model). 
+I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25`. Din oppgave er å ta utgangspunkt en eller flere av Python-programmene og implementere de som  AWS Lambda-funksjoner ved hjelp av AWS SAM (Serverless Application Model). 
 
 Prøv gjerne pythonkoden først for å bli kjent med tjenesten. I ditt codespace kan du lage et nytt Python `virtual environment`
 
@@ -49,15 +83,41 @@ Eksempelbilde
 
 Sett opp infrastrukturen for Lambda-funksjonen - Bruk `sam init` til å generere en ny SAM-applikasjon.
 
-#### Trinn 2: Skriv Lambda-funksjonen
+#### Trinn 2: Skriv  Lambda-funksjonen og forbedre koden
 
-Flytt koden fra Python-programmet og skriv det om til en Lambda-funksjon. Funksjonen skal motta en forespørsel via HTTP.
+Flytt koden fra Python-programmet og skriv det om til en Lambda-funksjon. Fokuser først på å få ting til å fungere. Deretter kan du forsøke å forbedre koden ved feks å ikke hardkode bucketnavn og andre verdier - 
+men istedet bruke for eksempel environment variabler 
 
+```
+Resources:
+  MyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Environment:
+        Variables:
+          BUCKET_NAME: my-demo-bucket
+```
+
+I Python-koden kan disse leses  med kode som `bucket_name = os.environ.get("BUCKET_NAME", "")`
 
 ####  Test og deploy SAM-applikasjonen
 
 1. Bygg Lambda-funksjonen lokalt med SAM CLI for å sikre at den fungerer som forventet.
-2. Deploy applikasjonen. Etter deploy bør du verifisere at POST-endepunktet fungerer, og at Lambda-funksjonen kan lagre filer i S3-bucketen `sopra-steria-ai-day-25`.
+
+```
+sam build --use-container
+```
+2. Deploy applikasjonen.
+
+Deploy applikasjonen med 
+
+```
+sam deploy .... 
+```
+Du må selv finne ut av argumentene for `sam deploy`
 
 #### Tips og  anbefalinger
 - **Timeout**: Husk at Lambdafunksjoner har en konfigurerbar timeout, viktig spesielt for cideo
