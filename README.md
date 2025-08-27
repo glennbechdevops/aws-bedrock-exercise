@@ -32,6 +32,7 @@ Du må start med å lage en fork av dette repoet til din egen GitHub konto.
 I terminalen kjør følgende kommandoer
 
 ```
+cd /tmp
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
@@ -41,7 +42,7 @@ Test at CLI og Akesessnøkler er riktig satt opp ved å kjøre
 
 ```
 aws s3 ls
-````
+````
 
 ## Litt om AWS Bedrock 
 
@@ -54,6 +55,7 @@ Funksjonaliteten vi trenger fra AWS Bedrock er foreløpig ikke tilgjengelig i Ir
 ### Installer SAM
 
 ```
+cd /tmp
 wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
 unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
 sudo ./sam-installation/install
