@@ -1,12 +1,45 @@
-#  Sopra Steria Habnds on Bedrock-lab 
+#  Sopra Steria Hands-on Bedrock-lab 
 
 <img width="1181" alt="image" src="img/header.png">
 
+## Lag en fork
 
-## Hvordan jobbe med oppgaven
+Du må start med å lage en fork av dette repoet til din egen GitHub konto.
 
-1. Lag en fork til din egen GitHub-bruker av dette repositoryet 
-2. Start et GitHub Codespace (trykk .)
+![Alt text](img/fork.png  "a title")
+
+## Lag AWS Credentials 
+
+* Følg veiledningen her for å lage Access Key og Secret Access Key  - https://github.com/glennbechdevops/aws-iam-accesskeys
+
+## Sett Access Key & secret  som CodeSpaces/Repository secrets
+
+<img width="2652" height="1186" alt="image" src="https://github.com/user-attachments/assets/e5eb3cc1-8310-4515-b0f8-54acbd6b2db9" />
+
+* I din fork, velg "settings" og "Secrets and Variables"
+* Velg "Coee Spaces" og "New repository secret
+* Legg inn verdier for både AWS_ACCESS_KEY_ID og AWS_SECRET_ACCESS_KEY
+
+## Start et Codespace & Installer nødvendig programvare 
+* Fra din fork av dette repositoryet, starter du CodeSpaces. Keyboard shortcut er "."
+* Alternativt, velg den grønne "Code", "Velg Codespaces" og "Create codespace from main"
+* Fra ditt mnye CodeSpace - Åpne et **terminalvindu**, og velg "Continue working in GitHub Codespaces"
+  
+### Installer AWS CLI 
+
+I terminalen kjør følgende kommandoer
+
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+Test at CLI og Akesessnøkler er riktig satt opp ved å kjøre 
+
+```
+aws s3 ls
+``
 
 ## Litt om AWS Bedrock 
 
