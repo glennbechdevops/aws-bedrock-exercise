@@ -117,6 +117,11 @@ Resources:
 
 I Python-koden kan disse leses  med kode som `bucket_name = os.environ.get("BUCKET_NAME", "")`
 
+
+### Gi Lambdafunksjonen nødvendige rettigheter / IAM Policyer for å bruke bedrock 
+
+Lambdafunskonen trenger rettigheter ti å bruke AWS Bedrock. Endre template.yml, legg til nødvendige rettigheter.
+
 ####  Test og deploy SAM-applikasjonen
 
 1. Bygg Lambda-funksjonen lokalt med SAM CLI for å sikre at den fungerer som forventet.
