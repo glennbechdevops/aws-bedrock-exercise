@@ -158,7 +158,7 @@ Lag en enkel frontend (HTML/JavaScript eller React) som lar en bruker skrive inn
 Det kan være greit at for eksempel eksamens-spørsmål-generatoren selv-modererer seg selv og gjør en analyse for potensielt støtende tekst (toxicity)
 før teksten skrives ut. Modifiser koden til å gjøre først spørsmåls-generering, og deretter tekstanalyse med comprehend.
 
-### 2. **Metadata i DynamoDB**
+### 3. **Metadata i DynamoDB**
 
 Utvid løsningen slik at hvert genererte bilde også registreres i en DynamoDB-tabell. Tabellen kan f.eks. lagre:
 
@@ -169,7 +169,7 @@ Utvid løsningen slik at hvert genererte bilde også registreres i en DynamoDB-t
 
 *Hint:* Bruk `boto3` sitt DynamoDB-API (`put_item`). Husk IAM-tilgang.
 
-### 3. **Egen bucket og IAM-policy**
+### 4. **Egen bucket og IAM-policy**
 
 I stedet for å bruke den delte S3-bucketen, opprett din egen bucket i AWS-kontoen.
 
