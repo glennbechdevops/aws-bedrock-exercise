@@ -153,6 +153,11 @@ Lag en enkel frontend (HTML/JavaScript eller React) som lar en bruker skrive inn
 
 *Hint:* Du kan bruke `fetch` i JavaScript for å gjøre POST-kallet til API Gateway, og hente ut S3-URL-en fra responsen.
 
+### 2. **Sentimentanalyse for tekstgenerering**
+
+Det kan være greit at for eksempel eksamens-spørsmål-generatoren selv-modererer seg selv og gjør en analyse for potensielt støtende tekst (toxicity)
+før teksten skrives ut. Modifiser koden til å gjøre først spørsmåls-generering, og deretter tekstanalyse med comprehend.
+
 ### 2. **Metadata i DynamoDB**
 
 Utvid løsningen slik at hvert genererte bilde også registreres i en DynamoDB-tabell. Tabellen kan f.eks. lagre:
