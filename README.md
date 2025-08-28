@@ -143,9 +143,7 @@ Du må selv finne ut av argumentene for `sam deploy`
 - **IAM-rolle**: Sørg for at Lambda-funksjonen har nødvendige tillatelser til å skrive til S3-bucketen, og kalle tjenesten AWS Bedrock
 - **Regionkonfigurasjon**: Husk at regionen for infrastrukturen skal være `eu-west-1`, selv om ressurser som AWS Bedrock kan ligge i andre regioner.
 
-## Bonusoppgaver (velg minst én)
-
-For å utfordre deg selv litt ekstra kan du velge en eller flere av følgende bonusoppgaver. Disse bygger videre på Lambda-funksjonen du allerede har laget:
+## Bonusoppgave: Finn på en oppgave selv, eller la deg inspirere her; 
 
 ### 1. **Frontend-integrasjon**
 
