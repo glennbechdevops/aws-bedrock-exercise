@@ -1,18 +1,18 @@
-import boto3, json
+import boto3
 
 bedrockrt = boto3.client("bedrock-runtime", region_name="us-east-1")
-model_id = "amazon.titan-text-express-v1"
+model_id = "amazon.nova-lite-v1:0"
 
-body = {
-    "inputText": "Generate an Exam question for the AWS Associate Developer Exam. DVA-c02, medium difficuly, three options for multiple choice, json formated question, choices, and a flag or correct or not ",
-    "textGenerationConfig": {"temperature": 0.7, "topP": 0.9, "maxTokenCount": 500}
-}
-
-resp = bedrockrt.invoke_model(
-    modelId=model_id,                 # <-- key change
-    contentType="application/json",
-    accept="application/json",
-    body=json.dumps(body)
+prompt = (
+    "Generate an Exam question for the AWS Associate Developer Exam. DVA-C02, "
+    "medium difficulty, three options for multiple choice, JSON formatted with "
+    "question, choices, and a flag for correct or not."
 )
 
-print(resp["body"].read().decode("utf-8"))
+resp = bedrockrt.converse(
+    modelId=model_id,
+    messages=[{"role": "user", "content": [{"text": prompt}]}],
+    inferenceConfig={"temperature": 0.7, "topP": 0.9, "maxTokens": 500},
+)
+
+print(resp["output"]["message"]["content"][0]["text"])
