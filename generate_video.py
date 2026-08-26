@@ -42,7 +42,7 @@ start = bedrockrt.start_async_invoke(
 )
 
 invocation_arn = start["invocationArn"]
-print(f"Started Nova Reel job: {invocation_arn}")
+print(f"Started Luma Ray job: {invocation_arn}")
 
 # ===== Poll for completion =====
 status = "InProgress"
