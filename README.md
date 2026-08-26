@@ -9,16 +9,12 @@ Du må start med å lage en fork av dette repoet til din egen GitHub konto.
 <img width="2938" height="1334" alt="image" src="https://github.com/user-attachments/assets/81319cee-9cc0-4658-8de1-f9adb328ac30" />
 
 
-## Lag AWS Credentials 
-
-* Følg veiledningen her for å lage Access Key og Secret Access Key  - https://github.com/glennbechdevops/aws-iam-accesskeys
-
 ## Sett Access Key & secret  som CodeSpaces/Repository secrets
 
-<img width="2652" height="1186" alt="image" src="https://github.com/user-attachments/assets/e5eb3cc1-8310-4515-b0f8-54acbd6b2db9" />
+Access keys blir gitt i klasserommet 
 
 * I din fork, velg "settings" og "Secrets and Variables"
-* Velg "Code Spaces" og "New repository secret"
+* Velg "Actions" og "New repository secret"
 * Legg inn verdier for både AWS_ACCESS_KEY_ID og AWS_SECRET_ACCESS_KEY
 
 ## Start et Codespace & Installer nødvendig programvare 
@@ -38,7 +34,13 @@ unzip awscliv2.zip
 sudo ./aws/install
 ```
 
-Test at CLI og Akesessnøkler er riktig satt opp ved å kjøre 
+Konfigurer aws-cli med nøkler 
+
+```
+aws configure
+```
+
+Test at CLI og nøkler er riktig satt opp ved å kjøre 
 
 ```
 aws s3 ls
@@ -59,6 +61,7 @@ cd /tmp
 wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
 unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
 sudo ./sam-installation/install
+cd /workspaces/aws-bedrock-exercise 
 ````
 
 #  Oppgave: Implementer en Lambda-funksjon med SAM
@@ -71,7 +74,8 @@ I dette repositoryet finner du tre python-programmer. Programmene har "noen" utf
 
 Din oppgave er å ta utgangspunkt en eller flere av Python-programmene og implementere de som  AWS Lambda-funksjoner ved hjelp av AWS SAM (Serverless Application Model). 
 
-Prøv gjerne pythonkoden først for å bli kjent med tjenesten. I ditt codespace kan du lage et nytt Python `virtual environment`
+Prøv gjerne pythonkoden først for å bli kjent med tjenesten. I ditt codespace kan du lage et nytt Python `virtual environment` Et virtual environment i Python er et isolert miljø der du kan installere pakker og avhengigheter uten å påvirke resten av systemet. Det gjør det mulig å ha forskjellige prosjekter med ulike pakkeversjoner på samme maskin.
+
 
 ```
 python3 -m venv .venv
@@ -84,10 +88,8 @@ generate_exam_question.py
 
 ```
 
-I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-25` Python koden bruker denne for å lagre bilder- og video, dere kan fortsette med det når dere lager Lambda-funksjoner
+I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-26` Python koden bruker denne for å lagre bilder- og video, dere kan fortsette med det når dere lager Lambda-funksjoner
 
-
-Et virtual environment i Python er et isolert miljø der du kan installere pakker og avhengigheter uten å påvirke resten av systemet. Det gjør det mulig å ha forskjellige prosjekter med ulike pakkeversjoner på samme maskin.
 
 Eksempelbilde
 
