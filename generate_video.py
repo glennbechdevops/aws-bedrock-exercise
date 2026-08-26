@@ -3,32 +3,28 @@ import time
 import random
 import boto3
 
-region         = "us-east-1"                   # Nova Reel is available here
-model_id       = "amazon.nova-reel-v1:1"       # Current Nova Reel model ID
-output_bucket  = "pgr301-couch-explorers"      # <-- your bucket
-output_prefix  = "generated_videos/"           # folder in your bucket
+# Nova Reel is legacy (winding down alongside Nova Canvas/Omni/Premier as of 2026).
+# Luma Ray is the only ACTIVE text-to-video model on Bedrock, and it only lives in us-west-2.
+# Async output requires a same-region S3 bucket — the class eu-west-1 buckets will NOT work here;
+# create your own us-west-2 bucket and point output_bucket at it.
+region         = "us-west-2"
+model_id       = "luma.ray-v2:0"
+output_bucket  = "glennbech-bedrock-videos-usw2"   # provisioned by infra/main.tf
+output_prefix  = "generated_videos/"
 
 # Important!! Change this before your investor demo :-)
 prompt = "Investors with circus hats enthusiastically funding an AI startup; upbeat mood; smooth dolly-in; soft studio lighting; shallow depth of field."
 
-fps        = 24
-dimension  = "1280x720"
-duration_s = 6                                 
-seed       = random.randint(0, 2_147_483_646)
+seed = random.randint(0, 2_147_483_646)
 
 bedrockrt = boto3.client("bedrock-runtime", region_name=region)
 
 model_input = {
-    "taskType": "TEXT_VIDEO",
-    "textToVideoParams": {
-        "text": prompt
-    },
-    "videoGenerationConfig": {
-        "durationSeconds": duration_s,
-        "fps": fps,
-        "dimension": dimension,
-        "seed": seed,
-    }
+    "prompt": prompt,
+    "aspect_ratio": "16:9",
+    "duration": "5s",
+    "resolution": "720p",
+    "loop": False,
 }
 
 # Where the model should save results in your S3 bucket
