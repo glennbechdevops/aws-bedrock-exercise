@@ -50,22 +50,9 @@ aws s3 ls
 
 AWS Bedrock er en tjeneste fra Amazon som gir tilgang til ulike KI-modeller uten behov for å håndtere den tekniske infrastrukturen selv. Du sender inn et *prompt* — for eksempel "en solnedgang over fjorden med palmer, fjell, og en elg i bakgrunnen" — og modellen genererer et bilde, en video eller en tekst basert på beskrivelsen.
 
-Modell- og regionsvalg har endret seg mye i 2026 (se seksjonen under). I dette repoet kjører `generate_image.py` og `generate_video.py` mot Bedrock i `us-west-2`. Selve infrastrukturen din (Lambda, API Gateway, etc.) kan fortsatt ligge i `eu-west-1` — en Lambda i Irland kaller Bedrock i USA uten problem.
+I dette repoet kjører `generate_image.py` og `generate_video.py` mot Bedrock i `us-west-2`. Selve infrastrukturen din (Lambda, API Gateway, etc.) kan ligge i `eu-west-1` — en Lambda i Irland kaller Bedrock i USA uten problem.
 
-## Om modellene (august 2026)
-
-Bedrock-landskapet for bilde- og videogenerering har endret seg mye det siste året. Kort oppsummering av hvorfor koden i dette repoet ser ut som den gjør nå:
-
-**Utfaset / legacy:**
-
-- `amazon.titan-image-generator-v1` — fjernet fra Bedrock (dette var opprinnelig modellen i `generate_image.py`).
-- `amazon.titan-text-express-v1` — fjernet (opprinnelig modell i `generate_exam_question.py`).
-- `amazon.nova-canvas-v1:0` (bilde) — `LEGACY`, EOL 2026-09-30. Kontoer som ikke har brukt modellen de siste 30 dagene blir blokkert fra å ta den i bruk igjen.
-- `amazon.nova-reel-v1:0` / `v1:1` (video) — `LEGACY`, samme situasjon.
-
-Amazon annonserte i juli 2026 at de trapper ned Nova Premier, Omni, Reel og Canvas for å satse på et nytt frontier-modell-team ledet av Pieter Abbeel (forventes avduket på re:Invent 2026). Nova Micro/Lite/Pro (rene tekstmodeller) består.
-
-**Aktive alternativer per august 2026:**
+## Modeller
 
 | Modalitet | Modell | Region |
 |-----------|--------|--------|
@@ -73,7 +60,7 @@ Amazon annonserte i juli 2026 at de trapper ned Nova Premier, Omni, Reel og Canv
 | Tekst → video | `luma.ray-v2:0` | `us-west-2` |
 | Tekst → tekst | `amazon.nova-lite-v1:0`, `anthropic.claude-haiku-4-5-*` | `us-east-1`, `us-west-2` |
 
-Merk at Luma Ray krever at S3-bucketen for output ligger i samme region (`us-west-2`) som modellen. Repoet inneholder en liten Terraform-config under `infra/` som oppretter en slik bucket — `terraform apply` derfra gir deg en fungerende output-bucket.
+Luma Ray krever at S3-bucketen for output ligger i samme region (`us-west-2`) som modellen. Terraform-config under `infra/` oppretter en slik bucket — `terraform apply` derfra gir deg en fungerende output-bucket.
 
 ### Installer SAM
 
@@ -109,7 +96,7 @@ generate_exam_question.py
 
 ```
 
-I klassens delte AWS-konto finnes det en S3-bucket med navnet `sopra-steria-ai-day-26` (i `eu-west-1`) som `generate_image.py` skriver bilder til — Bedrock-kallet går til `us-west-2` mens S3-put fra Python fint kan krysse regioner. For `generate_video.py` derimot må output-bucketen ligge i `us-west-2` (Bedrock skriver videoen synkront selv), så der brukes en egen bucket definert i `infra/main.tf`.
+Bildescriptet skriver til den delte klassebucketen `sopra-steria-ai-day-26` (i `eu-west-1`) — Bedrock-kallet går til `us-west-2` mens S3-put fra Python krysser regioner uten problem. Videoscriptet må derimot skrive til en `us-west-2`-bucket fordi Bedrock skriver videoen selv; den provisjoneres av `infra/main.tf`.
 
 
 Eksempelbilde
