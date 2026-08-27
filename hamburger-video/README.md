@@ -33,3 +33,12 @@ curl -X POST "$URL" \
   -H 'Content-Type: application/json' \
   -d '{"prompt":"A crispy hamburger on a wooden table, cinematic food commercial."}'
 ```
+
+The response is a `202` with an `invocationArn`. Poll the status endpoint until the job completes; the response then contains a presigned URL for the MP4:
+
+```shell
+curl "$URL/status?arn=<invocationArn>"
+# {"status":"InProgress"}  ...  {"status":"Completed","key":"...","url":"https://...presigned..."}
+```
+
+The API also sends CORS headers (and answers the OPTIONS preflight), so the browser frontend in `../frontend/` can call it directly.

@@ -12,6 +12,12 @@ Globals:
     Runtime: python3.12
     Timeout: 30
     MemorySize: 256
+  Api:
+    # Browsers preflight cross-origin JSON POSTs with OPTIONS; this answers it.
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
 
 Resources:
   HamburgerVideoFunction:
@@ -30,6 +36,7 @@ Resources:
             - Effect: Allow
               Action:
                 - bedrock:StartAsyncInvoke
+                - bedrock:GetAsyncInvoke
               Resource: '*'
             - Effect: Allow
               Action:
@@ -39,6 +46,7 @@ Resources:
             - Effect: Allow
               Action:
                 - s3:PutObject
+                - s3:GetObject
               Resource: !Sub arn:${AWS::Partition}:s3:::${OutputBucket}/*
       Events:
         GenerateVideo:
@@ -46,6 +54,11 @@ Resources:
           Properties:
             Path: /hamburger-video
             Method: post
+        VideoStatus:
+          Type: Api
+          Properties:
+            Path: /hamburger-video/status
+            Method: get
 
 Outputs:
   HamburgerVideoApi:
