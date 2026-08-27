@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Burgerify - POST a photo, get back a heroic burger campaign poster.
+  Deploy the stack in eu-west-1; the Bedrock calls go to us-east-1 (Nova Lite,
+  vision) and us-west-2 (Stability Core, image generation) as per the lab README.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: sopra-steria-ai-day-26
+    Description: S3 bucket the poster is written to (the shared class bucket in eu-west-1 works)
+
+Globals:
+  Function:
+    Timeout: 60          # two Bedrock calls in sequence; image gen is the slow one
+    MemorySize: 512
+  Api:
+    # Browsers preflight JSON POSTs with OPTIONS; this makes API Gateway answer it.
+    # The POST response itself already carries Access-Control-Allow-Origin from the Lambda.
+    Cors:
+      AllowMethods: "'POST,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
+
+Resources:
+  BurgerifyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+          TEXT_MODEL_ID: amazon.nova-lite-v1:0
+          IMAGE_MODEL_ID: stability.stable-image-core-v1:1
+          TEXT_REGION: us-east-1
+          IMAGE_REGION: us-west-2
+      Policies:
+        - Statement:
+            - Sid: InvokeBedrockModels
+              Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                # Foundation-model ARNs have no account id.
+                # If you switch TEXT_MODEL_ID to an inference profile
+                # (us.amazon.nova-lite-v1:0), add the inference-profile ARN too.
+                - arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0
+                - arn:aws:bedrock:us-west-2::foundation-model/stability.stable-image-core-v1:1
+            - Sid: WriteAndPresignPosters
+              Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+              Resource: !Sub arn:aws:s3:::${BucketName}/*
+      Events:
+        BurgerifyApi:
+          Type: Api
+          Properties:
+            Path: /burgerify
+            Method: post
+
+Outputs:
+  BurgerifyApiUrl:
+    Description: 'POST a JSON body with an "image" field (base64) here'
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/burgerify

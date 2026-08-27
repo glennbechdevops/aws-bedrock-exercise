@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Burgerify 🍔</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bun: #f0a24b;
+    --bun-dark: #d9832f;
+    --bun-light: #ffc46e;
+    --cheese: #ffc02e;
+    --cheese-dark: #f0a500;
+    --lettuce: #7fbf3f;
+    --lettuce-dark: #5f9c28;
+    --patty: #6b3a1f;
+    --patty-dark: #4c2814;
+    --tomato: #e0402e;
+    --ketchup: #c62d1a;
+    --cream: #fff6e3;
+    --ink: #3a2313;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, #ffe3b3 0%, #ffd28f 60%, #f7bd74 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---------- floating snack sky ---------- */
+  .floater {
+    position: fixed;
+    font-size: 2rem;
+    opacity: 0.35;
+    pointer-events: none;
+    user-select: none;
+    animation: drift linear infinite;
+    z-index: 0;
+  }
+  @keyframes drift {
+    from { transform: translateY(110vh) rotate(0deg); }
+    to   { transform: translateY(-15vh) rotate(360deg); }
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 1rem 1rem 4rem; }
+
+  header { text-align: center; padding: 1.25rem 0 0.5rem; }
+  header .tag {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 0.8rem;
+    color: var(--ketchup);
+  }
+
+  /* ---------- the monster (the page IS the burger) ---------- */
+  .monster { position: relative; margin-top: 4.5rem; filter: drop-shadow(0 14px 24px rgba(76, 40, 20, 0.35)); }
+
+  .eyes {
+    position: absolute;
+    top: -4.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 3.5rem;
+    z-index: 3;
+  }
+  .eye {
+    width: 4.4rem; height: 4.4rem;
+    background: #fff;
+    border: 5px solid var(--patty-dark);
+    border-radius: 50%;
+    position: relative;
+    animation: eyebob 3.4s ease-in-out infinite;
+  }
+  .eye:nth-child(2) { animation-delay: 0.4s; }
+  @keyframes eyebob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  .pupil {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 1.6rem; height: 1.6rem;
+    margin: -0.8rem 0 0 -0.8rem;
+    background: var(--patty-dark);
+    border-radius: 50%;
+    transition: transform 0.12s ease-out;
+  }
+  .lid {
+    position: absolute; inset: -5px;
+    background: var(--bun);
+    border: 5px solid var(--patty-dark);
+    border-radius: 50%;
+    transform: scaleY(0);
+    transform-origin: top;
+    animation: blink 5.5s infinite;
+  }
+  .eye:nth-child(2) .lid { animation-delay: 0.15s; }
+  @keyframes blink { 0%, 92%, 100% { transform: scaleY(0); } 95%, 97% { transform: scaleY(1); } }
+
+  .burger { border-radius: 999px 999px 28px 28px / 200px 200px 28px 28px; overflow: hidden; }
+
+  section { padding: 1.5rem 2rem; position: relative; }
+
+  /* top bun */
+  .bun-top {
+    background: radial-gradient(ellipse 120% 100% at 50% 0%, var(--bun-light) 0%, var(--bun) 55%, var(--bun-dark) 100%);
+    text-align: center;
+    padding: 4.5rem 2rem 2.75rem;
+  }
+  .bun-top h1 {
+    font-family: 'Titan One', 'Arial Black', sans-serif;
+    font-size: clamp(2.6rem, 10vw, 4.2rem);
+    color: var(--cream);
+    -webkit-text-stroke: 3px var(--patty-dark);
+    paint-order: stroke fill;
+    text-shadow: 0 5px 0 var(--patty-dark);
+    letter-spacing: 0.04em;
+    transform: rotate(-2deg);
+  }
+  .bun-top p { margin-top: 0.75rem; font-weight: 700; font-size: 1.05rem; color: var(--patty-dark); }
+  .seed {
+    position: absolute;
+    width: 14px; height: 9px;
+    background: var(--cream);
+    border-radius: 50%;
+    opacity: 0.9;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+
+  /* teeth hang below the top bun */
+  .teeth { display: flex; height: 26px; background: var(--bun-dark); }
+  .tooth {
+    flex: 1;
+    background: #fff;
+    clip-path: polygon(12% 0, 88% 0, 50% 100%);
+    filter: drop-shadow(0 2px 1px rgba(0,0,0,0.2));
+  }
+
+  .divider { display: block; width: 100%; height: 30px; margin-bottom: -1px; }
+
+  .lettuce-band { background: linear-gradient(180deg, var(--lettuce) 0%, var(--lettuce-dark) 100%); }
+  .cheese-band  { background: linear-gradient(180deg, var(--cheese) 0%, var(--cheese-dark) 100%); }
+  .patty-band   { background: linear-gradient(180deg, var(--patty) 0%, var(--patty-dark) 100%); color: var(--cream); }
+  .tomato-band  { background: linear-gradient(180deg, var(--tomato) 0%, var(--ketchup) 100%); }
+  .bun-bottom {
+    background: linear-gradient(180deg, var(--bun) 0%, var(--bun-dark) 100%);
+    text-align: center;
+    font-weight: 700;
+    color: var(--patty-dark);
+    padding: 1.25rem 2rem 1.5rem;
+  }
+
+  h2 {
+    font-family: 'Titan One', 'Arial Black', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .cheese-band h2, .lettuce-band h2, .tomato-band h2 { color: var(--patty-dark); }
+  .patty-band h2 { color: var(--cheese); }
+
+  /* mode toggle — the "menu" */
+  .tabs { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .tab {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.8rem 1rem;
+    font-family: 'Titan One', 'Arial Black', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--patty-dark);
+    background: var(--cream);
+    border: 4px solid var(--patty-dark);
+    border-radius: 14px;
+    cursor: pointer;
+    opacity: 0.65;
+    transition: transform 0.1s, opacity 0.1s;
+  }
+  .tab:hover { transform: translateY(-2px); }
+  .tab.active {
+    opacity: 1;
+    background: var(--cheese);
+    box-shadow: 0 5px 0 var(--patty-dark);
+    transform: translateY(-3px);
+  }
+
+  label { display: block; font-weight: 900; margin: 0.9rem 0 0.3rem; font-size: 0.9rem; }
+  input[type="text"], input[type="url"], textarea, select {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 3px solid var(--patty-dark);
+    border-radius: 12px;
+    background: var(--cream);
+    color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 4.5rem; }
+  input:focus, textarea:focus, select:focus { outline: 3px solid var(--cream); outline-offset: 1px; }
+  .hint { font-size: 0.8rem; opacity: 0.85; margin-top: 0.3rem; font-style: italic; }
+  .row { display: flex; gap: 0.75rem; }
+  .row > div { flex: 1; }
+
+  .drop {
+    display: block;
+    border: 4px dashed var(--cheese);
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.18);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+    margin-top: 0.9rem;
+  }
+  .drop:hover, .drop.dragover { background: rgba(0, 0, 0, 0.32); transform: scale(1.01); }
+  .drop input { display: none; }
+  .drop .big { font-size: 2.6rem; animation: chomp 2.2s ease-in-out infinite; display: inline-block; }
+  @keyframes chomp { 0%,100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(8deg) scale(1.15); } }
+  #preview {
+    display: none;
+    max-width: 170px;
+    max-height: 170px;
+    margin: 0.85rem auto 0;
+    border: 4px solid var(--cheese);
+    border-radius: 12px;
+  }
+
+  button.go {
+    display: block;
+    width: 100%;
+    margin-top: 1.4rem;
+    padding: 1rem;
+    font-family: 'Titan One', 'Arial Black', sans-serif;
+    font-size: 1.35rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: linear-gradient(180deg, var(--tomato) 0%, var(--ketchup) 100%);
+    border: 4px solid var(--patty-dark);
+    border-radius: 999px;
+    box-shadow: 0 6px 0 var(--patty-dark);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  button.go:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 0 var(--patty-dark); }
+  button.go:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 var(--patty-dark); }
+  button.go:disabled { opacity: 0.75; cursor: wait; animation: hungry 0.8s ease-in-out infinite; }
+  @keyframes hungry { 0%,100% { transform: scale(1); } 50% { transform: scale(0.985); } }
+
+  #status { display: none; text-align: center; padding: 0.5rem 0 0; font-weight: 700; color: var(--cheese); }
+  #status .burgerspin { display: inline-block; font-size: 1.6rem; animation: spin 1s linear infinite; margin-right: 0.5rem; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #error {
+    display: none;
+    margin: 1.25rem 0 0;
+    padding: 1rem 1.25rem;
+    background: var(--cream);
+    border: 4px solid var(--ketchup);
+    border-radius: 18px 4px 18px 4px;
+    color: var(--ketchup);
+    font-weight: 900;
+  }
+  #error::before { content: "🩸 KETCHUP SPILL — "; }
+
+  #result { display: none; }
+  #result .frame {
+    position: relative;
+    border: 6px solid var(--patty-dark);
+    border-radius: 14px;
+    overflow: hidden;
+    animation: tada 0.6s ease-out;
+    background: #000;
+  }
+  #result img, #result video { display: block; width: 100%; }
+  @keyframes tada {
+    0% { transform: scale(0.7) rotate(-4deg); opacity: 0; }
+    60% { transform: scale(1.05) rotate(2deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .stamp {
+    position: absolute;
+    top: 12px; right: 12px;
+    font-family: 'Titan One', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--cream);
+    background: var(--ketchup);
+    border: 3px solid var(--cream);
+    border-radius: 8px;
+    padding: 0.3rem 0.6rem;
+    transform: rotate(8deg);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+    pointer-events: none;
+  }
+  #result .meta { margin-top: 0.8rem; font-size: 0.9rem; color: var(--patty-dark); }
+  #result .meta a { color: var(--ketchup); font-weight: 900; }
+
+  @media (max-width: 480px) {
+    section { padding: 1.25rem 1.1rem; }
+    .bun-top { padding: 3.5rem 1.1rem 2.25rem; }
+    .eyes { gap: 2.2rem; }
+    .eye { width: 3.4rem; height: 3.4rem; }
+    .row { flex-direction: column; gap: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="tag">⚠ Warning: contains monster ⚠</div>
+  </header>
+
+  <div class="monster">
+    <div class="eyes" aria-hidden="true">
+      <div class="eye"><div class="pupil"></div><div class="lid"></div></div>
+      <div class="eye"><div class="pupil"></div><div class="lid"></div></div>
+    </div>
+
+    <div class="burger">
+
+      <section class="bun-top">
+        <h1>Burgerify</h1>
+        <p>Hire the Burger Monster to star in your own movie.<br>Or feed it a photo and let it crash the picture.</p>
+      </section>
+
+      <div class="teeth" aria-hidden="true">
+        <div class="tooth"></div><div class="tooth"></div><div class="tooth"></div><div class="tooth"></div>
+        <div class="tooth"></div><div class="tooth"></div><div class="tooth"></div><div class="tooth"></div>
+      </div>
+
+      <section class="lettuce-band">
+        <h2>🥬 Step 1 · Place your order</h2>
+        <div class="tabs">
+          <button class="tab active" id="tabVideo" type="button">🎬 Monster movie</button>
+          <button class="tab" id="tabImage" type="button">🍔 Monsterify a photo</button>
+        </div>
+      </section>
+
+      <svg class="divider" viewBox="0 0 680 30" preserveAspectRatio="none" aria-hidden="true" style="background: var(--lettuce-dark)">
+        <path fill="#ffc02e" d="M0 0 h680 v6 q-20 22 -40 4 q-15 -10 -30 2 q-25 20 -50 2 q-20 -14 -40 0 q-25 18 -50 4 q-18 -10 -36 0 q-28 16 -56 2 q-22 -12 -44 2 q-24 16 -48 2 q-20 -12 -40 0 q-26 18 -52 2 q-18 -10 -36 2 q-30 20 -60 0 q-24 -16 -48 2 q-20 16 -40 -4 z"/>
+      </svg>
+
+      <section class="cheese-band" style="padding-top: 0.75rem;">
+        <h2>🧀 Step 2 · The ingredients</h2>
+
+        <div class="mode-vid">
+          <label for="videoApiUrl">Studio hotline (hamburger-video API)</label>
+          <input type="url" id="videoApiUrl" placeholder="https://xxxx.execute-api.eu-west-1.amazonaws.com/Prod/hamburger-video">
+          <p class="hint">The <code>HamburgerVideoApi</code> stack output. Remembered in your browser.</p>
+
+          <label for="videoPrompt">The script</label>
+          <textarea id="videoPrompt" maxlength="500" placeholder="A colossal burger monster stomping through a city of fries, cinematic, dramatic lighting…"></textarea>
+          <p class="hint">Leave empty and the monster films its default commercial.</p>
+
+          <div class="row">
+            <div>
+              <label for="videoDuration">Runtime</label>
+              <select id="videoDuration">
+                <option value="5s" selected>5 seconds</option>
+                <option value="9s">9 seconds</option>
+              </select>
+            </div>
+            <div>
+              <label for="videoAspect">Screen</label>
+              <select id="videoAspect">
+                <option value="16:9" selected>16:9 · cinema</option>
+                <option value="1:1">1:1 · square</option>
+                <option value="9:16">9:16 · phone</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="mode-img" style="display: none;">
+          <label for="apiUrl">Monster hotline (Burgerify API)</label>
+          <input type="url" id="apiUrl" placeholder="https://xxxx.execute-api.eu-west-1.amazonaws.com/Prod/burgerify">
+          <p class="hint">The <code>BurgerifyApiUrl</code> stack output. Remembered in your browser.</p>
+
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            <span class="big">🍔</span>
+            <div style="font-weight: 900; color: var(--cream);">Drop a photo into the monster's mouth</div>
+            <div class="hint" style="color: var(--cream);">or click to choose — big photos get shrunk in the browser first</div>
+            <img id="preview" alt="your offering">
+          </label>
+        </div>
+
+      </section>
+
+      <section class="patty-band">
+        <h2>🥩 Step 3 · Fire up the grill</h2>
+
+        <div class="mode-img" style="display: none;">
+          <label for="context">Whisper to the monster <span style="opacity:0.7; font-size:0.85em;">(optional)</span></label>
+          <input type="text" id="context" maxlength="120" placeholder="e.g. extra cheesy · surrounded by fries · rampaging through a city">
+          <p class="hint">A little extra context for the image generation. Leave empty and the monster improvises.</p>
+        </div>
+
+        <button class="go" id="go">🔥 Summon the Burger Monster 🔥</button>
+        <div id="status"><span class="burgerspin">🍔</span><span id="statusText">Grilling…</span></div>
+        <div id="error"></div>
+      </section>
+
+      <section class="tomato-band" id="result">
+        <h2 id="resultTitle">🍅 Behold the abomination</h2>
+        <div class="frame">
+          <img id="poster" alt="Your burgerified image">
+          <video id="movie" controls loop playsinline style="display: none;"></video>
+          <div class="stamp" id="stamp">100% BEEF</div>
+        </div>
+        <p class="meta" id="desc"></p>
+        <p class="meta" id="linkline"><a id="dl" target="_blank" rel="noopener">Open full size ↗</a></p>
+      </section>
+
+      <section class="bun-bottom">
+        🍟 Sopra Steria Bedrock lab · no burgers were harmed (they did the harming) 🍟
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+
+  // Sprinkle sesame seeds on the top bun.
+  const bun = document.querySelector('.bun-top');
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement('div');
+    s.className = 'seed';
+    s.style.left = (6 + Math.random() * 88) + '%';
+    s.style.top = (8 + Math.random() * 55) + '%';
+    s.style.transform = `rotate(${Math.random() * 360}deg)`;
+    bun.appendChild(s);
+  }
+
+  // Floating snack sky.
+  const snacks = ['🍔', '🍟', '🧀', '🍅', '🥬', '🥓', '🎬'];
+  for (let i = 0; i < 10; i++) {
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.textContent = snacks[i % snacks.length];
+    f.style.left = Math.random() * 96 + 'vw';
+    f.style.animationDuration = (16 + Math.random() * 22) + 's';
+    f.style.animationDelay = (-Math.random() * 30) + 's';
+    f.style.fontSize = (1.2 + Math.random() * 1.6) + 'rem';
+    document.body.appendChild(f);
+  }
+
+  // Googly eyes follow the pointer.
+  const pupils = document.querySelectorAll('.pupil');
+  document.addEventListener('pointermove', (e) => {
+    pupils.forEach((p) => {
+      const r = p.parentElement.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      const a = Math.atan2(dy, dx);
+      const d = Math.min(11, Math.hypot(dx, dy) / 12);
+      p.style.transform = `translate(${Math.cos(a) * d}px, ${Math.sin(a) * d}px)`;
+    });
+  });
+
+  // ---------- mode toggle ----------
+  let mode = 'video';
+  function setMode(next) {
+    mode = next;
+    $('tabImage').classList.toggle('active', mode === 'image');
+    $('tabVideo').classList.toggle('active', mode === 'video');
+    document.querySelectorAll('.mode-img').forEach((el) => el.style.display = mode === 'image' ? '' : 'none');
+    document.querySelectorAll('.mode-vid').forEach((el) => el.style.display = mode === 'video' ? '' : 'none');
+    $('go').textContent = mode === 'image' ? '🔥 Summon the Burger Monster 🔥' : '🎬 Roll camera! 🎬';
+    $('error').style.display = 'none';
+    $('result').style.display = 'none';
+  }
+  $('tabImage').addEventListener('click', () => setMode('image'));
+  $('tabVideo').addEventListener('click', () => setMode('video'));
+  setMode(mode);  // sync the button label with the default mode
+
+  // Remember API URLs between visits; allow prefill via ?api= / ?videoapi=
+  const params = new URLSearchParams(location.search);
+  const savedImg = params.get('api') || localStorage.getItem('burgerifyApiUrl');
+  const savedVid = params.get('videoapi') || localStorage.getItem('burgerVideoApiUrl');
+  if (savedImg) $('apiUrl').value = savedImg;
+  if (savedVid) $('videoApiUrl').value = savedVid;
+  $('apiUrl').addEventListener('change', () => localStorage.setItem('burgerifyApiUrl', $('apiUrl').value.trim()));
+  $('videoApiUrl').addEventListener('change', () => localStorage.setItem('burgerVideoApiUrl', $('videoApiUrl').value.trim()));
+
+  // ---------- photo handling ----------
+  let selectedFile = null;
+
+  const drop = $('drop');
+  $('file').addEventListener('change', (e) => setFile(e.target.files[0]));
+  drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('dragover'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('dragover');
+    setFile(e.dataTransfer.files[0]);
+  });
+
+  function setFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    selectedFile = file;
+    const preview = $('preview');
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  }
+
+  // API Gateway caps requests at 10 MB and Lambda at 6 MB, and base64 adds ~33%,
+  // so downscale to max 1024px JPEG before encoding.
+  function resizeToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 1024;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.9).split(',')[1]);
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = () => reject(new Error('The monster could not chew that image file.'));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // ---------- busy / status ----------
+  const imageMessages = [
+    'The monster sniffs your photo…',
+    'Grilling the patty of doom…',
+    'Applying ketchup war paint…',
+    'Melting unholy cheese…',
+    'Sesame seeds entering orbit…',
+    'The monster is climbing into the picture…',
+  ];
+  const videoMessages = [
+    'The monster is in makeup…',
+    'Lights… camera… lettuce…',
+    'Rolling take 1 of 1…',
+    'The monster demands a bigger trailer…',
+    'Rendering premium beef pixels…',
+    'Video jobs take a few minutes — the monster is a method actor…',
+  ];
+  let statusTimer = null;
+
+  function setBusy(busy) {
+    $('go').disabled = busy;
+    if (busy) {
+      $('go').textContent = '🍔 The monster is busy… 🍔';
+    } else {
+      $('go').textContent = mode === 'image' ? '🔥 Summon the Burger Monster 🔥' : '🎬 Roll camera! 🎬';
+    }
+    $('status').style.display = busy ? 'block' : 'none';
+    clearInterval(statusTimer);
+    if (busy) {
+      const msgs = mode === 'image' ? imageMessages : videoMessages;
+      let i = 0;
+      $('statusText').textContent = msgs[0];
+      statusTimer = setInterval(() => {
+        i = (i + 1) % msgs.length;
+        $('statusText').textContent = msgs[i];
+      }, 5000);
+    }
+  }
+
+  function showError(msg) {
+    const el = $('error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function showResult({ imageUrl, videoUrl, description, extraMeta }) {
+    $('poster').style.display = imageUrl ? 'block' : 'none';
+    $('movie').style.display = videoUrl ? 'block' : 'none';
+    if (imageUrl) $('poster').src = imageUrl;
+    if (videoUrl) { $('movie').src = videoUrl; $('movie').play().catch(() => {}); }
+    $('resultTitle').textContent = imageUrl ? '🍅 Behold the abomination' : '🍅 Now showing';
+    $('stamp').textContent = imageUrl ? '100% BEEF' : 'NOW SHOWING';
+    $('desc').innerHTML = '';
+    if (description) {
+      $('desc').innerHTML = '<strong>What the monster saw:</strong> ';
+      $('desc').append(description);
+    }
+    const dl = $('dl');
+    dl.href = imageUrl || videoUrl;
+    dl.textContent = imageUrl ? 'Open full size ↗' : 'Open the MP4 ↗';
+    // Rebuild the line from scratch; mutating live child nodes across runs
+    // left stale " · " fragments behind.
+    const linkline = $('linkline');
+    linkline.textContent = '';
+    if (extraMeta) linkline.append(extraMeta + ' · ');
+    linkline.append(dl);
+    $('result').style.display = 'block';
+    $('result').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ---------- image flow ----------
+  async function runImage() {
+    const apiUrl = $('apiUrl').value.trim();
+    if (!apiUrl) return showError('the monster has no phone number. Enter the Burgerify API URL in step 2.');
+    if (!selectedFile) return showError('the monster demands a photo. Feed it in step 2.');
+    localStorage.setItem('burgerifyApiUrl', apiUrl);
+
+    setBusy(true);
+    try {
+      const imageB64 = await resizeToBase64(selectedFile);
+      const context = $('context').value.trim();
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // `context` is the optional extra prompt text; `word` keeps the current
+        // backend contract working until it switches over to `context`.
+        body: JSON.stringify({ image: imageB64, context: context, word: context || 'BURGER' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `the API growled back with ${res.status}.`);
+      showResult({
+        imageUrl: data.url,
+        description: data.subject_description || '',
+        extraMeta: data.seed !== undefined ? `Seed ${data.seed}` : '',
+      });
+    } catch (err) {
+      showError(err.message === 'Failed to fetch'
+        ? 'could not reach the monster — check the URL and that the stack (with CORS) is deployed.'
+        : err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // ---------- video flow ----------
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function runVideo() {
+    const apiUrl = $('videoApiUrl').value.trim().replace(/\/+$/, '');
+    if (!apiUrl) return showError('the studio has no phone number. Enter the hamburger-video API URL in step 2.');
+    localStorage.setItem('burgerVideoApiUrl', apiUrl);
+
+    setBusy(true);
+    try {
+      const body = {
+        duration: $('videoDuration').value,
+        aspect_ratio: $('videoAspect').value,
+        resolution: '720p',
+      };
+      const prompt = $('videoPrompt').value.trim();
+      if (prompt) body.prompt = prompt;
+
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok && res.status !== 202) throw new Error(data.error || `the studio hung up with ${res.status}.`);
+      if (!data.invocationArn) throw new Error('the studio accepted the job but returned no invocationArn.');
+
+      // Poll the status endpoint until the MP4 lands (video jobs take minutes).
+      const statusUrl = `${apiUrl}/status?arn=${encodeURIComponent(data.invocationArn)}`;
+      const maxAttempts = 60; // × 10 s ≈ 10 minutes
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await sleep(10000);
+        const sRes = await fetch(statusUrl);
+        const sData = await sRes.json().catch(() => ({}));
+        if (!sRes.ok) throw new Error(sData.error || `status check failed with ${sRes.status}.`);
+        if (sData.status === 'Failed') {
+          throw new Error('the shoot failed: ' + (sData.failureMessage || 'no reason given.'));
+        }
+        if (sData.status === 'Completed' && sData.url) {
+          showResult({ videoUrl: sData.url });
+          return;
+        }
+      }
+      throw new Error('the monster is still filming after 10 minutes — check the S3 bucket later.');
+    } catch (err) {
+      showError(err.message === 'Failed to fetch'
+        ? 'could not reach the studio — check the URL and that the stack (with CORS) is deployed.'
+        : err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  $('go').addEventListener('click', () => {
+    $('error').style.display = 'none';
+    $('result').style.display = 'none';
+    if (mode === 'image') runImage(); else runVideo();
+  });
+})();
+</script>
+</body>
+</html>

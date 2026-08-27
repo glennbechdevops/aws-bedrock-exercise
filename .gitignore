@@ -1,3 +1,33 @@
 .idea/
 .venv/
 __pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local AWS credentials and environment files
+.aws/
+.env
+.env.*
+!.env.example
+
+# SAM build and local configuration
+.aws-sam/
+samconfig.toml
+
+# Terraform state and local working directory
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Downloaded AWS CLI and SAM CLI installers
+/aws/
+/sam-installation/
+/awscliv2.zip
+/aws-sam-cli-linux-x86_64.zip
+
+# OS/editor files
+.DS_Store
+
+# Git Credential Manager diagnostics
+gcm-diagnose.log
