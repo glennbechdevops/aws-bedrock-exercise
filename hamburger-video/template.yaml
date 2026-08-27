@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Start an asynchronous Luma Ray hamburger video generation job.
+
+Parameters:
+  OutputBucket:
+    Type: String
+    Description: Existing S3 bucket in us-west-2 for Bedrock video output.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    MemorySize: 256
+
+Resources:
+  HamburgerVideoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: generate_hamburger_video.lambda_handler
+      Environment:
+        Variables:
+          BEDROCK_REGION: us-west-2
+          MODEL_ID: luma.ray-v2:0
+          OUTPUT_BUCKET: !Ref OutputBucket
+          OUTPUT_PREFIX: generated_hamburger_videos/
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:StartAsyncInvoke
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - s3:GetBucketLocation
+                - s3:ListBucket
+              Resource: !Sub arn:${AWS::Partition}:s3:::${OutputBucket}
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource: !Sub arn:${AWS::Partition}:s3:::${OutputBucket}/*
+      Events:
+        GenerateVideo:
+          Type: Api
+          Properties:
+            Path: /hamburger-video
+            Method: post
+
+Outputs:
+  HamburgerVideoApi:
+    Description: API Gateway endpoint for starting hamburger video jobs.
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/Prod/hamburger-video
