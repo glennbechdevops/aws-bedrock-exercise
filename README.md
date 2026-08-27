@@ -2,6 +2,40 @@
 
 <img width="1181" alt="image" src="img/header.png">
 
+---
+
+## 🍔 Vår besvarelse: Burger Monster
+
+Denne forken inneholder tre deler. Infrastrukturen deployes i `eu-west-1`, Bedrock-kallene går til `us-east-1` / `us-west-2`.
+
+| Mappe | Hva det er | Modell |
+|-------|------------|--------|
+| [`hamburger-video/`](hamburger-video/) | Lambda + API Gateway som starter en asynkron videojobb og har et status-endepunkt som gir presignert URL når MP4-en er ferdig | `luma.ray-v2:0` (`us-west-2`) |
+| [`burgerify/`](burgerify/) | Lambda som tar et bilde, lar Nova Lite beskrive motivet, og genererer et nytt bilde med et burgermonster i scenen | `amazon.nova-lite-v1:0` + `stability.stable-image-core-v1:1` |
+| [`frontend/`](frontend/) | Statisk nettside (bonusoppgave 1) som snakker med begge API-ene. Hostes i en S3-bucket | – |
+
+### Rask start
+
+```bash
+# 1. Video-backend (bruk en us-west-2-bucket, f.eks. fra infra/)
+cd hamburger-video
+sam build --use-container
+sam deploy --guided --region eu-west-1 --parameter-overrides OutputBucket=<us-west-2-bucket>
+
+# 2. Bilde-backend (valgfritt)
+cd ../burgerify
+sam build --use-container
+sam deploy --guided --region eu-west-1
+
+# 3. Frontend
+cd ..
+bash frontend/deploy.sh
+```
+
+API-URL-ene limes inn i selve nettsiden (og huskes i nettleseren), så frontenden kan deployes uavhengig av backendene.
+
+---
+
 ## Lag en fork
 
 Du må start med å lage en fork av dette repoet til din egen GitHub konto.

@@ -21,7 +21,7 @@ with open(sys.argv[1], "rb") as f:
 
 event = {"image": image_b64}
 if len(sys.argv) > 2:
-    event["word"] = sys.argv[2]
+    event["context"] = sys.argv[2]
 
 result = lambda_handler(event, None)
 body = json.loads(result["body"])

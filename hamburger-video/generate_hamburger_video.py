@@ -72,11 +72,19 @@ def start_job(request):
 
 def _find_video_key(bucket, prefix, invocation_id):
     """Bedrock writes the MP4 under a subfolder named after the invocation id."""
-    candidates = [f"{prefix.rstrip('/')}/{invocation_id}", prefix]
-    for candidate in candidates:
+    prefix = prefix.strip("/")
+    # If the returned s3Uri already points at the invocation folder, listing the
+    # prefix itself is enough; otherwise the video sits one level deeper.
+    candidates = [f"{prefix}/{invocation_id}/" if prefix else f"{invocation_id}/",
+                  f"{prefix}/" if prefix else ""]
+    for index, candidate in enumerate(candidates):
         listing = s3_client.list_objects_v2(Bucket=bucket, Prefix=candidate)
         for obj in listing.get("Contents", []):
-            if obj["Key"].endswith(".mp4") and invocation_id in obj["Key"]:
+            if not obj["Key"].endswith(".mp4"):
+                continue
+            # The invocation-scoped folder can only hold this job's output, so
+            # take any mp4 there; a broader prefix needs the id to disambiguate.
+            if index == 0 or invocation_id in obj["Key"]:
                 return obj["Key"]
     return None
 

@@ -1,13 +1,13 @@
 # Burgerify 🍔
 
-POST a photo → get a heroic two-tone campaign poster of a burger with *your* features and "BURGER" in block letters at the bottom.
+POST a photo → get back a new image with a colossal burger monster looming in the scene next to the person in your photo.
 
 ## How it works
 
 Stability Core (`stability.stable-image-core-v1:1`) is text-to-image only, so the Lambda chains two Bedrock calls:
 
 1. **Nova Lite** (us-east-1, multimodal) describes the subject in the photo — hair, glasses, beard, expression, clothing.
-2. **Stability Core** (us-west-2) renders a stencil-style poster of a burger with those traits.
+2. **Stability Core** (us-west-2) renders a scene with a burger monster beside a person matching that description.
 3. The PNG lands in S3 and the response contains a presigned URL.
 
 Stack lives in `eu-west-1`, Bedrock calls cross regions — same pattern as the rest of the lab.
@@ -18,7 +18,7 @@ From the repo root (with your `.venv` active and `aws configure` done):
 
 ```bash
 pip install boto3
-python run_local.py selfie.jpg          # or: python run_local.py selfie.jpg KEBAB
+python run_local.py selfie.jpg          # or: python run_local.py selfie.jpg "rampaging through a city"
 ```
 
 Prints the JSON response including a presigned URL you can open in a browser.
@@ -39,7 +39,7 @@ URL=<BurgerifyApiUrl from the stack outputs>
 
 curl -s -X POST "$URL" \
   -H 'Content-Type: application/json' \
-  -d "{\"image\": \"$(base64 -w0 selfie.jpg)\", \"word\": \"BURGER\"}" | jq .
+  -d "{\"image\": \"$(base64 -w0 selfie.jpg)\", \"context\": \"rampaging through a city\"}" | jq .
 ```
 
 Response:

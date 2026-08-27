@@ -328,7 +328,7 @@
 
       <section class="bun-top">
         <h1>Burgerify</h1>
-        <p>Feed the Burger Monster a photo — or hire it to star in a movie.</p>
+        <p>Hire the Burger Monster to star in your own movie.<br>Or feed it a photo and let it crash the picture.</p>
       </section>
 
       <div class="teeth" aria-hidden="true">
@@ -339,8 +339,8 @@
       <section class="lettuce-band">
         <h2>🥬 Step 1 · Place your order</h2>
         <div class="tabs">
-          <button class="tab active" id="tabImage" type="button">🍔 Monsterify a photo</button>
-          <button class="tab" id="tabVideo" type="button">🎬 Burger commercial</button>
+          <button class="tab active" id="tabVideo" type="button">🎬 Monster movie</button>
+          <button class="tab" id="tabImage" type="button">🍔 Monsterify a photo</button>
         </div>
       </section>
 
@@ -351,21 +351,7 @@
       <section class="cheese-band" style="padding-top: 0.75rem;">
         <h2>🧀 Step 2 · The ingredients</h2>
 
-        <div class="mode-img">
-          <label for="apiUrl">Monster hotline (Burgerify API)</label>
-          <input type="url" id="apiUrl" placeholder="https://xxxx.execute-api.eu-west-1.amazonaws.com/Prod/burgerify">
-          <p class="hint">The <code>BurgerifyApiUrl</code> stack output. Remembered in your browser.</p>
-
-          <label class="drop" id="drop">
-            <input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif">
-            <span class="big">🍔</span>
-            <div style="font-weight: 900; color: var(--cream);">Drop a photo into the monster's mouth</div>
-            <div class="hint" style="color: var(--cream);">or click to choose — big photos get shrunk in the browser first</div>
-            <img id="preview" alt="your offering">
-          </label>
-        </div>
-
-        <div class="mode-vid" style="display: none;">
+        <div class="mode-vid">
           <label for="videoApiUrl">Studio hotline (hamburger-video API)</label>
           <input type="url" id="videoApiUrl" placeholder="https://xxxx.execute-api.eu-west-1.amazonaws.com/Prod/hamburger-video">
           <p class="hint">The <code>HamburgerVideoApi</code> stack output. Remembered in your browser.</p>
@@ -392,12 +378,26 @@
             </div>
           </div>
         </div>
+        <div class="mode-img" style="display: none;">
+          <label for="apiUrl">Monster hotline (Burgerify API)</label>
+          <input type="url" id="apiUrl" placeholder="https://xxxx.execute-api.eu-west-1.amazonaws.com/Prod/burgerify">
+          <p class="hint">The <code>BurgerifyApiUrl</code> stack output. Remembered in your browser.</p>
+
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            <span class="big">🍔</span>
+            <div style="font-weight: 900; color: var(--cream);">Drop a photo into the monster's mouth</div>
+            <div class="hint" style="color: var(--cream);">or click to choose — big photos get shrunk in the browser first</div>
+            <img id="preview" alt="your offering">
+          </label>
+        </div>
+
       </section>
 
       <section class="patty-band">
         <h2>🥩 Step 3 · Fire up the grill</h2>
 
-        <div class="mode-img">
+        <div class="mode-img" style="display: none;">
           <label for="context">Whisper to the monster <span style="opacity:0.7; font-size:0.85em;">(optional)</span></label>
           <input type="text" id="context" maxlength="120" placeholder="e.g. extra cheesy · surrounded by fries · rampaging through a city">
           <p class="hint">A little extra context for the image generation. Leave empty and the monster improvises.</p>
@@ -469,7 +469,7 @@
   });
 
   // ---------- mode toggle ----------
-  let mode = 'image';
+  let mode = 'video';
   function setMode(next) {
     mode = next;
     $('tabImage').classList.toggle('active', mode === 'image');
@@ -482,6 +482,7 @@
   }
   $('tabImage').addEventListener('click', () => setMode('image'));
   $('tabVideo').addEventListener('click', () => setMode('video'));
+  setMode(mode);  // sync the button label with the default mode
 
   // Remember API URLs between visits; allow prefill via ?api= / ?videoapi=
   const params = new URLSearchParams(location.search);
@@ -590,10 +591,15 @@
       $('desc').innerHTML = '<strong>What the monster saw:</strong> ';
       $('desc').append(description);
     }
-    $('dl').href = imageUrl || videoUrl;
-    $('dl').textContent = imageUrl ? 'Open full size ↗' : 'Open the MP4 ↗';
-    $('linkline').childNodes.forEach((n) => { if (n.nodeType === 3) n.remove(); });
-    if (extraMeta) $('linkline').prepend(extraMeta + ' · ');
+    const dl = $('dl');
+    dl.href = imageUrl || videoUrl;
+    dl.textContent = imageUrl ? 'Open full size ↗' : 'Open the MP4 ↗';
+    // Rebuild the line from scratch; mutating live child nodes across runs
+    // left stale " · " fragments behind.
+    const linkline = $('linkline');
+    linkline.textContent = '';
+    if (extraMeta) linkline.append(extraMeta + ' · ');
+    linkline.append(dl);
     $('result').style.display = 'block';
     $('result').scrollIntoView({ behavior: 'smooth' });
   }

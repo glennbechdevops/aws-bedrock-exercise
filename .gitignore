@@ -28,3 +28,6 @@ samconfig.toml
 
 # OS/editor files
 .DS_Store
+
+# Git Credential Manager diagnostics
+gcm-diagnose.log

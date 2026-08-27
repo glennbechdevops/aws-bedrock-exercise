@@ -1,15 +1,16 @@
 """
-Burgerify — turn any photo into a heroic burger campaign poster.
+Burgerify — drop a burger monster into any photo.
 
 Pipeline (Stability Core has no image-to-image mode, so we cheat):
   1. Nova Lite (multimodal, us-east-1) describes the subject in the photo.
-  2. Stability Core (us-west-2) generates a two-tone propaganda poster of a
-     burger with those traits, "BURGER" in block letters at the bottom.
+  2. Stability Core (us-west-2) generates a scene with a colossal burger
+     monster looming next to that subject.
   3. Result is written to S3, and a presigned URL is returned.
 
 Invoke via API Gateway:
   POST /burgerify
-  {"image": "<base64 of a jpeg/png>", "word": "BURGER"}   # word is optional
+  {"image": "<base64 of a jpeg/png>", "context": "rampaging through a city"}
+  `context` is optional extra direction for the image prompt.
 """
 
 import base64
@@ -75,17 +76,19 @@ def describe_subject(image_bytes: bytes) -> str:
     return response["output"]["message"]["content"][0]["text"].strip()
 
 
-def build_poster_prompt(description: str, word: str) -> str:
-    """Step 2: mash the description into a burger campaign poster prompt."""
-    return (
-        "Retro two-tone political campaign poster of a heroic anthropomorphic "
-        "cheeseburger gazing confidently into the distance. The burger borrows "
-        f"these traits from a person: {description} "
-        "Flat stencil illustration, limited palette of red, cream and navy "
-        "blue, halftone shading, dramatic lighting from below, centered "
-        f'portrait composition, bold block letters spelling "{word}" at the '
-        "bottom of the poster."
+def build_monster_prompt(description: str, extra_context: str) -> str:
+    """Step 2: put a burger monster into a scene with the person from the photo."""
+    prompt = (
+        "A colossal friendly burger monster looming in the scene: sesame-seed bun "
+        "head, googly cartoon eyes, lettuce frills, dripping melted cheese and a "
+        "thick beef patty body. Beside it stands a person described as: "
+        f"{description} "
+        "Cinematic wide shot, vivid saturated colors, dramatic rim lighting, "
+        "highly detailed illustration."
     )
+    if extra_context:
+        prompt += f" Additional direction: {extra_context}"
+    return prompt
 
 
 def generate_poster(prompt: str, seed: int) -> bytes:
@@ -131,7 +134,9 @@ def lambda_handler(event, context):
     if not BUCKET_NAME:
         return _response(500, {"error": "BUCKET_NAME environment variable not set"})
 
-    word = str(payload.get("word", "BURGER"))[:20].upper() or "BURGER"
+    # `context` is the optional extra direction from the frontend.
+    # `word` is the legacy field name and is still accepted.
+    extra_context = str(payload.get("context") or payload.get("word") or "")[:200].strip()
 
     try:
         image_bytes = base64.b64decode(image_b64)
@@ -139,7 +144,7 @@ def lambda_handler(event, context):
     except ValueError as err:
         return _response(400, {"error": str(err)})
 
-    prompt = build_poster_prompt(description, word)
+    prompt = build_monster_prompt(description, extra_context)
     seed = random.randint(0, 2147483647)
     poster_bytes = generate_poster(prompt, seed)
 
